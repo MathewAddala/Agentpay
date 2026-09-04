@@ -1,0 +1,91 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════════════════
+#  Agent-to-Agent Commerce Simulation
+#  Docker Compose — 3 services + shared SQLite volume
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  # ── Merchant Agent (FastAPI :8001) ──────────────────────────
+  merchant-agent:
+    build:
+      context: .
+      dockerfile: merchant_agent/Dockerfile
+    container_name: merchant-agent
+    ports:
+      - "8001:8001"
+    volumes:
+      - app-data:/app/data
+    env_file: .env
+    environment:
+      - DATABASE_PATH=/app/data/commerce.db
+      - MERCHANT_URL=http://merchant-agent:8001
+      - BUYER_URL=http://buyer-agent:8002
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - agent-net
+
+  # ── Buyer Agent (FastAPI :8002) ─────────────────────────────
+  buyer-agent:
+    build:
+      context: .
+      dockerfile: buyer_agent/Dockerfile
+    container_name: buyer-agent
+    ports:
+      - "8002:8002"
+    volumes:
+      - app-data:/app/data
+    env_file: .env
+    environment:
+      - DATABASE_PATH=/app/data/commerce.db
+      - MERCHANT_URL=http://merchant-agent:8001
+      - BUYER_URL=http://buyer-agent:8002
+    depends_on:
+      merchant-agent:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - agent-net
+
+  # ── Dashboard (Flask :8080) ─────────────────────────────────
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: dashboard
+    ports:
+      - "8080:8080"
+    volumes:
+      - app-data:/app/data
+    env_file: .env
+    environment:
+      - DATABASE_PATH=/app/data/commerce.db
+      - BUYER_URL=http://buyer-agent:8002
+      - DASHBOARD_PORT=8080
+    depends_on:
+      - merchant-agent
+      - buyer-agent
+    restart: unless-stopped
+    networks:
+      - agent-net
+
+# ── Shared resources ──────────────────────────────────────────
+volumes:
+  app-data:
+    driver: local
+
+networks:
+  agent-net:
+    driver: bridge
