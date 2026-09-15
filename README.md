@@ -1,4 +1,4 @@
-# ⚡ AgentPay — Agent-to-Agent Commerce Simulation
+# AgentPay — Agent-to-Agent Commerce Simulation
 
 > Two autonomous AI agents negotiate and complete a real (test-mode) Razorpay transaction through a structured, auditable 4-step handshake protocol with deterministic guardrails and explainable AI phrasing.
 
@@ -10,32 +10,32 @@
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ```
 ┌─────────────────┐       4-Step Handshake Protocol       ┌──────────────────┐
-│   🛒 Buyer      │◄─────────────────────────────────────►│   🏪 Merchant    │
+│    Buyer      │◄─────────────────────────────────────►│    Merchant    │
 │     Agent       │     INTENT  →  OFFER                  │     Agent        │
 │   (FastAPI)     │     MANDATE →  CONFIRMATION           │   (FastAPI)      │
 │   Port: 8002    │                                       │   Port: 8001     │
 └────────┬────────┘                                       └────────┬─────────┘
          │                                                         │
          │          ┌───────────────────────────────────┐          │
-         └─────────►│  ⚡ AgentPay React + TS Dashboard │◄─────────┘
+         └─────────►│   AgentPay React + TS Dashboard │◄─────────┘
                     │   (Vite • Tailwind • Lucide)      │
                     │   Port: 8080 (or 5173 for HMR)    │
                     └─────────────────┬─────────────────┘
                                       │
                                       ▼
                             ┌───────────────────┐
-                            │   💳 Razorpay     │
+                            │    Razorpay     │
                             │   Test Mode SDK   │
                             └───────────────────┘
 ```
 
 ---
 
-## 🌟 Key Capabilities & Industry-Grade Design
+##  Key Capabilities & Industry-Grade Design
 
 ### 1. Explainable & Bounded Money Actions
 - **LLM as "Voice", Never the "Brain"**: Groq (Llama 3.3 70B) generates human-readable negotiation phrasing, intent parsing, and receipts.
@@ -57,7 +57,7 @@
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Clone and Set Up Environment
 ```bash
@@ -98,7 +98,7 @@ Open **http://localhost:5173** (with live HMR) or **http://localhost:8080**.
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 razorpay/
@@ -154,7 +154,7 @@ razorpay/
 
 ---
 
-## 🧪 Protocol Verification
+##  Protocol Verification
 
 To run a test handshake programmatically:
 ```bash
